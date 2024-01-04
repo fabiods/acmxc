@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+import tools
+import turbomolelib
+import crystallib
+import acmlib
+
+options = tools.manage_options()
+
+tools.print_header()
+
+program = options["prog"]
+wfunc = options["w"]
+ncpu = options["n"]
+tdir = options["d"]
+metallic_mode = options["metal"]
+if (program == "turbomole"):
+    program = turbomolelib.turbomole(tdir,ncpu,wfunc)
+    tdir = program.turbodir
+elif (program == "crystal"):
+    baseinput = options["input"]
+    program = crystallib.crystal(tdir,ncpu,wfunc,baseinput)
+    tdir = program.crystaldir
+    
+
+tools.print_options(options,tdir)
+
+program.checkscf()
+
+if (not metallic_mode):
+    program.checkmp2()
+
+print("Running SCF calculation...")
+program.run_scf_and_w()
+
+if (not metallic_mode):
+    print("Running MP2 calculation...")
+    program.run_mp2()
+else:
+    program.print_metallic_mp2_file()
+
+
+program.extract_results()
+print()
+print(" %-20s %16.10f" %("SCF energy:",program.scfene))
+print(" %-20s %16.10f" %("HF-exchange energy:",program.xene))
+print(" %-20s %16.10f" %("W_inf energy:",program.wene))
+print(" %-20s %16.10f" %("W1_inf energy:",program.w1ene))
+print(" %-20s %16.10f" %("MP2 corr. energy:",program.mp2ene))
+
+correne = acmlib.compute_acm(options["formula"],program.xene,program.wene,program.w1ene,program.mp2ene)
+xcene = program.xene + correne
+totene = program.scfene + correne
+print()
+print("RESULTS:")
+print(" Correlation energy:          %16.10f" %(correne))
+print(" Exchange-correlation energy: %16.10f" %(xcene))
+print(" Total energy:                %16.10f" %(totene))
+print()
+
