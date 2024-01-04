@@ -4,7 +4,7 @@ acmxc is a script to perform calculations using Adiabatic Connection
 Models (ACMs) for the correlation energy. It drives electronic
 structure calculations from several codes and computes total
 energies.
-Actually the following codes are supported: TURBOMOLE, Crystal
+Actually the following codes are supported: TURBOMOLE, Crystal.
 
 
 == PREREQUISITES ==
