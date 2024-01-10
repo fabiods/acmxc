@@ -54,7 +54,7 @@ The following options are available:
 
   -p \<string>, --prog \<string>, --program \<string>
 			Program to use. Possible options:
-			turbomole
+			turbomole, 
 			crystal
 
   -f \<string>, --formula \<string>
