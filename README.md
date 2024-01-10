@@ -41,7 +41,7 @@ files must be prepared. The <file_name>.d12 must contain the keyword EXCHGENE.
 \* RUNNING  
 To run the script use:
 
-acmxc -p <program> [ -i <file_name> ] [ other options ]
+acmxc -p \<program> [ -i <file_name> ] [ other options ]
 
 The -i option is required only if \<progam> == crystal
 
