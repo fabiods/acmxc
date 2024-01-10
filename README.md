@@ -60,11 +60,11 @@ The following options are available:
   -f \<string>, --formula \<string>
                         ACM formula to be used. 
 			Possible options: 
-			isi
-                        revisi 
-			genisi 
-			spl
-			lb
+			isi,
+                        revisi,
+			genisi, 
+			spl,
+			lb,
 			dpi
 			(default: isi)
 
