@@ -1,5 +1,8 @@
 import os
 import tools
+import subprocess
+import shutil
+
 
 class crystal:
 
@@ -95,13 +98,15 @@ class crystal:
                print("already done")
                runscf = False
         if (runscf == True):
-            os.system(self.crystal_exec + " " + str(self.ncpu) + " " + self.baseinput + " &> /dev/null ; mv " + self.baseinput + ".out " + self.scf_file_name)
+            subprocess.run([self.crystal_exec, str(self.ncpu), self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            shutil.move(self.baseinput + ".out", self.scf_file_name)
             ch = self.check_scf_convergence()
             if (ch == False):
                 stri = "The SCF calculation did not converge.\n Check the "+self.scf_file_name+" file"                 
                 tools.error(stri) 
         print("Running Properties")
-        os.system(self.properties_exec + " " + self.baseinput + " " + self.baseinput + " &> /dev/null ; mv " + self.baseinput + ".outp " + self.w_file_name)
+        subprocess.run([self.properties_exec, self.baseinput, self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        shutil.move(self.baseinput + ".outp", self.w_file_name)
 
 
     def run_mp2(self):
@@ -115,8 +120,8 @@ class crystal:
                   stri = "UHF not implemented in cryscor"
                   tools.error(stri)
               else:            
-                os.system(self.cryscor_exec + " " + self.baseinput + " &> /dev/null")
-                os.system("mv " + self.baseinput + ".outc " + self.mp2_file_name)        
+                subprocess.run([self.cryscor_exec, self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        shutil.move(self.baseinput + ".outc", self.mp2_file_name)
 
 
     def extract_results(self):

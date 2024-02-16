@@ -72,7 +72,8 @@ class turbomole:
         f.close()
         ch = False
         for line in mp2_content:
-            if ("ricc2 ended normally" in line):
+#            if ("ricc2 ended normally" in line):
+            if ("ricc2 : all done" in line):
                 ch = True
         return ch
  
@@ -105,7 +106,10 @@ class turbomole:
                print("already done")
                runscf = False
         if (runscf == True):
-            os.system(self.ridft_exec+" &> "+self.scf_file_name)
+            f = open(self.scf_file_name,"w")
+            subprocess.run([self.ridft_exec], stdout=f, stderr=subprocess.DEVNULL)
+            f.close()
+
             ch = self.check_scf_convergence()
             if (ch == False):
                 stri = "The SCF calculation did not converge.\n Check the "+self.scf_file_name+" file"                 
@@ -119,7 +123,9 @@ class turbomole:
         tools.kdg("scfiterlimit")
         tools.adg("$scfiterlimit 1")
         tools.adg("$dft\n   functional "+self.wfunc+"\n   gridsize 3")
-        os.system(self.ridft_exec+" &> "+self.w_file_name)
+        f = open(self.w_file_name,"w")
+        subprocess.run([self.ridft_exec], stdout=f, stderr=subprocess.DEVNULL)
+        f.close()
         os.chdir("..")
         shutil.copy("TMP/"+self.w_file_name,".")
         tools.remove_dir("TMP")
@@ -134,7 +140,9 @@ class turbomole:
                print("already done")
                torun = False
         if (torun == True): 
-           os.system(self.ricc2_exec+" &> "+self.mp2_file_name)
+           f = open(self.mp2_file_name,"w")
+           subprocess.run([self.ricc2_exec], stdout=f, stderr=subprocess.DEVNULL)
+           f.close()
            ch = self.check_mp2_convergence()
            if (ch == False):
               stri = "The MP2 calculation did not converge.\n Check the "+self.mp2_file_name+" file"   
