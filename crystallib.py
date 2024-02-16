@@ -121,7 +121,7 @@ class crystal:
                   tools.error(stri)
               else:            
                 subprocess.run([self.cryscor_exec, self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        shutil.move(self.baseinput + ".outc", self.mp2_file_name)
+                shutil.move(self.baseinput + ".outc", self.mp2_file_name)
 
 
     def extract_results(self):
