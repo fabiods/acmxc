@@ -1,5 +1,4 @@
-import argparse
-#import turbomolelib
+
 import sys
 import shutil
 import os
@@ -7,54 +6,7 @@ from datetime import datetime
 import acmlib
 
 
-# manage the command line options
-def manage_options():
-    parser = argparse.ArgumentParser(description='PREREQUISITE: Set up a valid input file to run an ACM calculation with TURBOMOLE or CRYSTAL, then run the script.')
-#
-    parser.add_argument("-p","--prog","--program",
-                        required=True,
-                        choices=["turbomole","crystal"],
-                        metavar="<string>")
-#
-    parser.add_argument("-f","--formula",
-                        default="isi",
-                        choices=["isi","revisi","spl","lb","genisi","dpi"],
-                        help="Formula to be used. Options: isi, revisi, genisi, spl, lb ,dpi",
-                        metavar="<string>")
-#
-    parser.add_argument("-w","-wfunc",
-                        default="hpc",
-                        choices=["pc","hpc","mpc"],
-                        help="W_inf functional. Options: pc, hpc, mpc",
-                        metavar="<string>")
-#
-    parser.add_argument("-n","-nthreads",
-                        default=1,
-                        type=int,
-                        help="Number of threads to use (default: 1)",
-                        metavar="<int>")
-#
-    parser.add_argument("-d","-dir",
-                        default=None,
-                        help="Base path of <program> (default=set from environment variable)",
-                        metavar="<string>")
-#
-    parser.add_argument("-i","--input",
-                        default="input",
-                        help="root of the crystal file name (not including the .d12 .d3 and .d4 extensions)",
-                        metavar="<string>")
 
-#
-    parser.add_argument("--metal",
-                        action='store_true',
-                        default=False,
-                        help="Sets E_mp2=-inf. Use for calculations of systems with vanishing gap (default=False)")
-#
-    options = vars(parser.parse_args())
-#
-#
-    return options
-    
 
 # print an error message and exit
 def error(stri):
@@ -131,17 +83,25 @@ def print_header():
 
 
 # print a summary of the options
-def print_options(options,tdir):
+def print_options(options):
+    program = options[0]
+    tdir = options[1]
+    baseinput = options[2]
+    ncpu = f"{options[3]}"
+    formula = options[4]
+    wfunc = options[5]
+    metal_mode = f"{options[6]}"
     print("")
-    print("Program: ",options["prog"])
-    if (options["prog"] == "crystal"):
-        print ("Input file: ",options["input"])
+    print("Program: ",program)
+    if (program == "crystal"):
+        print ("Input file: ",baseinput)
     print("Program's path: ",tdir)
-    print("N. cpu: ",options["n"])
-    print("ACM model: ",options["formula"])
-    acmlib.print_refs(options["formula"])
-    print("W functional: ",options["w"])
-    print_w_refs(options["w"])
+    print("N. cpu: ",ncpu)
+    print("ACM model: ",formula)
+    acmlib.print_refs(formula)
+    print("W functional: ",wfunc)
+    print_w_refs(wfunc)
+    print("Metal mode: ",metal_mode)
     print("")
 
 

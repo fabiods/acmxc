@@ -17,8 +17,7 @@ def compute_acm(formula,xene,wene,w1ene,mp2ene):
     elif (formula == "dpi"): 
         correne = compute_dpi(xene,wene,w1ene,mp2ene) 
     else:
-        stri = "Formula "+formula+ " not implemented!"
-        tools.error(stri)
+        tools.error(f"Formula {formula} not implemented!")
     return correne
 
 
@@ -35,15 +34,14 @@ def print_refs(formula):
         refstri="J. Chem. Phys. 159, 244111 (2023)"
     elif (formula == "dpi"):  
         refstri="Phys. Rev. B 81, 085123 (2010)"
-    stri = "  Ref: " + refstri
-    print(stri)
+    print(f"  Ref: {refstri}")
          
 
 def compute_isi(xene,wene,w1ene,mp2ene):
     if (mp2ene == 0):
         return 0.0
     elif (mp2ene == -np.inf ):
-        cene=compute_isi_lim(xene,wene,w1ene)   
+        cene = compute_isi_lim(xene,wene,w1ene)   
         return cene
     else:
         x = -4*mp2ene
@@ -61,7 +59,7 @@ def compute_revisi(xene,wene,w1ene,mp2ene):
     if (mp2ene == 0):
         return 0.0
     elif (mp2ene == -np.inf):
-        cene=compute_revisi_lim(xene,wene,w1ene)     
+        cene = compute_revisi_lim(xene,wene,w1ene)     
         return cene
     else:
         tmp1 = 2.*mp2ene*(w1ene**2)
@@ -76,7 +74,7 @@ def compute_genisi(xene,wene,w1ene,mp2ene):
     if (mp2ene == 0):
         return 0.0
     elif (mp2ene == -np.inf):
-        cene=compute_uegisi_lim(xene,wene,w1ene)-xene     
+        cene = compute_uegisi_lim(xene,wene,w1ene) - xene     
         return cene
     else:
         dd=3.5
@@ -140,7 +138,7 @@ def compute_spl(xene,wene,mp2ene):
     if (mp2ene == 0):
         return 0.0
     elif (mp2ene == -np.inf):
-        cene=compute_spl_lim(xene,wene)
+        cene = compute_spl_lim(xene,wene)
         return cene            
     else:
         cc = 2.*mp2ene/(wene-xene)
@@ -152,7 +150,7 @@ def compute_lb(xene,wene,mp2ene):
     if (mp2ene == 0):
         return 0.0
     elif (mp2ene == -np.inf):
-        cene=compute_lb_lim(xene,wene)       
+        cene = compute_lb_lim(xene,wene)       
         return cene
     else:
         bb = (xene - wene)/2.
