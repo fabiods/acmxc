@@ -1,0 +1,34 @@
+
+             +-----------------------------+
+             |            ACMxc            |
+             | Perform HF-ACM calculations |
+             |                             |
+             +-----------------------------+
+
+09.04.2024 - 10:10:12
+
+
+Program:  crystal
+Input file:  na
+Program's path:  /home/atom/ATOMSOFT/CRYSTAL/NEWOMP2/../utils23
+N. cpu:  10
+ACM model:  revisi
+  Ref:  J. Chem. Theory Comput. 5, 743 (2009)
+W functional:  hpc
+  Ref: J. Chem. Theory Comput. 18, 5936 (2022)
+Metal mode:  True
+
+Running SCF calculation...
+
+ SCF energy:           -161.8493882451
+ HF-exchange energy:    -14.0288685652
+ W_inf energy:          -23.4589729976
+ W1_inf energy:          28.6659564478
+ MP2 corr. energy:                -inf
+
+RESULTS:
+ Correlation energy:             -1.3319979408
+ Exchange-correlation energy:   -15.3608665060
+ Total energy:                 -163.1813861859
+
+
