@@ -1,0 +1,47 @@
+$title
+$symmetry cs
+$coord    file=coord
+$optimize
+ internal   off
+ redundant  off
+ cartesian  on
+$atoms
+    basis =def-SV(P)
+    cbas  =def-SV(P)
+    jbas  =def-SV(P)
+$basis    file=basis
+$scfmo   file=mos
+$closed shells
+ a'      1-8                                    ( 2 )
+ a"      1-2                                    ( 2 )
+$scfiterlimit       30
+$scfconv        7
+$scfdamp   start=0.300  step=0.050  min=0.100
+$scfdump
+$scfdiis
+$maxcor    500 MiB  per_core
+$scforbitalshift  automatic=.1
+$energy    file=energy
+$grad    file=gradient
+$ricore    10000
+$rij
+$jbas    file=auxbasis
+$marij
+$denconv     0.10000000E-06
+$cbas    file=auxbasis
+$rundimensions
+   natoms=6
+$last step     ricc2
+$ricc2
+  mp2
+$orbital_max_rnorm 0.50881162650113E-05
+$last SCF energy change = -151.88672
+$subenergy  Etot         E1                  Ej                Ex                 En
+-151.8867154974    -282.5010936548     0.000000000000     0.000000000000     36.66283720462
+$charge from ridft
+          0.000 (not to be modified here)
+$dipole from ridft
+  x     1.15000772344079    y     0.03385071102278    z    -0.00000000000000    a.u.
+   | dipole | =    2.9243161999  debye
+$last MP2 energy change= -.38268867
+$end
