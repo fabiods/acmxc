@@ -1,0 +1,34 @@
+
+             +-----------------------------+
+             |            ACMxc            |
+             | Perform HF-ACM calculations |
+             |                             |
+             +-----------------------------+
+
+09.04.2024 - 09:50:29
+
+
+Program:  turbomole
+Program's path:  /home/turbo/GIT78/turbomole
+N. cpu:  1
+ACM model:  isi
+  Ref: Phys. Rev. Lett. 84, 5070 (2000)
+W functional:  pc
+  Ref: Phys. Rev. A 62, 012502 (2000)
+Metal mode:  False
+
+Running SCF calculation...
+Running MP2 calculation...
+
+ SCF energy:           -151.8867154974
+ HF-exchange energy:    -17.8916221575
+ W_inf energy:          -29.2328449451
+ W1_inf energy:          28.4040170721
+ MP2 corr. energy:       -0.3826886727
+
+RESULTS:
+ Correlation energy:             -0.3599516958
+ Exchange-correlation energy:   -18.2515738533
+ Total energy:                 -152.2466671932
+
+
