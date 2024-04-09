@@ -1,0 +1,101 @@
+
+             +-----------------------------+
+             |            ACMxc            |
+             | Perform HF-ACM calculations |
+             |                             |
+             +-----------------------------+
+
+09.04.2024 - 09:53:52
+
+==== System 1 ====
+
+Program:  turbomole
+Program's path:  /home/turbo/GIT78/turbomole
+N. cpu:  5
+ACM model:  lb
+  Ref: Phys. Rev. A 79, 064503 (2009)
+W functional:  hpc
+  Ref: J. Chem. Theory Comput. 18, 5936 (2022)
+Metal mode:  False
+
+Running SCF calculation...
+Running MP2 calculation...
+
+ SCF energy:           -151.8867154984
+ HF-exchange energy:    -17.8916217642
+ W_inf energy:          -29.3490905904
+ W1_inf energy:          28.5670787043
+ MP2 corr. energy:       -0.3826887249
+
+RESULTS:
+ Correlation energy:             -0.3651783367
+ Exchange-correlation energy:   -18.2568001009
+ Total energy:                 -152.2518938351
+
+
+==== System 2 ====
+
+Program:  turbomole
+Program's path:  /home/turbo/GIT78/turbomole
+N. cpu:  5
+ACM model:  lb
+  Ref: Phys. Rev. A 79, 064503 (2009)
+W functional:  hpc
+  Ref: J. Chem. Theory Comput. 18, 5936 (2022)
+Metal mode:  False
+
+Running SCF calculation...
+Running MP2 calculation...
+
+ SCF energy:            -75.9389205437
+ HF-exchange energy:     -8.9418698872
+ W_inf energy:          -14.6479100591
+ W1_inf energy:          14.2341240053
+ MP2 corr. energy:       -0.1904617188
+
+RESULTS:
+ Correlation energy:             -0.1817523334
+ Exchange-correlation energy:    -9.1236222206
+ Total energy:                  -76.1206728771
+
+
+==== System 3 ====
+
+Program:  turbomole
+Program's path:  /home/turbo/GIT78/turbomole
+N. cpu:  5
+ACM model:  lb
+  Ref: Phys. Rev. A 79, 064503 (2009)
+W functional:  hpc
+  Ref: J. Chem. Theory Comput. 18, 5936 (2022)
+Metal mode:  False
+
+Running SCF calculation...
+Running MP2 calculation...
+
+ SCF energy:            -75.9403353476
+ HF-exchange energy:     -8.9361914520
+ W_inf energy:          -14.6407620815
+ W1_inf energy:          14.2320441504
+ MP2 corr. energy:       -0.1916976873
+
+RESULTS:
+ Correlation energy:             -0.1828755192
+ Exchange-correlation energy:    -9.1190669712
+ Total energy:                  -76.1232108669
+
+
+===== INTERACTION ANALYSIS ====
+    (all energies are in Ha)
+ Int. SCF energy:           -0.0074596071
+ Int. exchange energy:      -0.0135604250
+ Int. W_inf energy:         -0.0604184498
+ Int. W1_inf energy:         0.1009105487
+ Int. MP2 energy:           -0.0005293188
+ Int. ACM corr. energy:     -0.0005504841
+ Int. XC energy:            -0.0141109090
+
+ Bare interaction energy:        -0.0080100911
+ Size-consistent correction:      0.0000001794
+ SCC interaction energy:         -0.0080099117
+
