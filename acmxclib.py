@@ -9,7 +9,7 @@ import acmlib
 class acmxc:
 
     allowed_programs_list = ["turbomole","crystal"]
-    allowed_acm_formulas = ["isi","revisi","spl","lb","genisi","dpi"]
+    allowed_acm_formulas = ["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","mp2"]
     allowed_wfunc = ["pc","hpc","mpc"]
 
     

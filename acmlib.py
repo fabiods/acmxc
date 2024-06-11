@@ -2,6 +2,7 @@ from numpy import sqrt
 from numpy import log
 import numpy as np
 import tools
+from numpy import power as nppower
 
 def compute_acm(formula,xene,wene,w1ene,mp2ene):
     if (formula == "isi"):
@@ -15,7 +16,13 @@ def compute_acm(formula,xene,wene,w1ene,mp2ene):
     elif (formula == "genisi"): 
         correne = compute_genisi(xene,wene,w1ene,mp2ene)  
     elif (formula == "dpi"): 
-        correne = compute_dpi(xene,wene,w1ene,mp2ene) 
+        correne = compute_dpi(xene,wene,w1ene,mp2ene)
+    elif (formula == "spl2"):
+        correne = compute_spl2(xene,wene,mp2ene)
+    elif (formula == "mp2"):
+        correne = mp2ene
+    elif (formula == "mpacf1"):
+        correne = compute_mpacf1(xene,wene,mp2ene) 
     else:
         tools.error(f"Formula {formula} not implemented!")
     return correne
@@ -34,6 +41,12 @@ def print_refs(formula):
         refstri="J. Chem. Phys. 159, 244111 (2023)"
     elif (formula == "dpi"):  
         refstri="Phys. Rev. B 81, 085123 (2010)"
+    elif (formula == "spl2" or formula=="mpacf1"):
+        refstri="J. Phys. Chem. Lett. 12, 4769 (2021)"
+    elif (formula == "mp2"):
+        refstri="Phys. Rev. 46,  618 (1934)"
+    else:
+        refstri=""
     print(f"  Ref: {refstri}")
          
 
@@ -144,6 +157,27 @@ def compute_spl(xene,wene,mp2ene):
         cc = 2.*mp2ene/(wene-xene)
         cene = (xene-wene)*((sqrt(1.+2.*cc)-1.-cc)/cc)
         return cene
+
+    
+def compute_spl2(xene,wene,mp2ene):
+    alpha = 1.1472
+    beta = -0.7397 - 1.0
+    m2 = 10.68
+    b2 = 0.117
+    wab = alpha*wene + beta*xene
+    m1 = wab - m2
+    b1 = (b2*m2 - 4.*mp2ene)/(m2-wab)
+    cene = wab - 2.*m1*(sqrt(b1+1)-1)/b1 - 2.*m2*(sqrt(b2+1)-1)/b2
+    return cene
+
+
+def compute_mpacf1(xene,wene,mp2ene):
+    dd1 = 0.294**2
+    dd2 = 0.934**4
+    g = -wene -xene
+    h = (4.*mp2ene + 2.*dd1*g)/(-4.*mp2ene - dd2*g)
+    cene = -g + (g*(h+1.))/(sqrt(dd1+1.)+h*nppower(dd2+1.,(1/4)))
+    return cene
 
 
 def compute_lb(xene,wene,mp2ene):
