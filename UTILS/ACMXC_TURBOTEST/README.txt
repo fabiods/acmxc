@@ -38,4 +38,6 @@ ct7         (charge transfer complex) Y. Zhao, D. G. Truhlar, JCTC 1, 415 (2005)
 pp5         (pi-pi* complexes)        Y. Zhao, D. G. Truhlar, JCTC 1, 415 (2005)
 wi7         (weak interaction)        Y. Zhao, D. G. Truhlar, JCTC 1, 415 (2005)
 s22         (non covalent interact)   T. Takatani, E. G. Hohenstein, M. Malagoli, M. S. Marshall, C. D. Sherrill,  J. Chem. Phys. 132, 144104 (2010)
-s66         (non covalent interact)   J. Řezáč*, K. E. Riley†, P. Hobza, J. Chem. Theory Comput 7, 3466 (2011)
+s66         (non covalent interact)   J. Řezáč, K. E. Riley†, P. Hobza, J. Chem. Theory Comput 7, 3466 (2011)
+a24         (non covalent interact)   J. Řezáč, P. Hobza, J. Chem. Theory Comput. 9, 2151 (2013)
+
