@@ -25,14 +25,14 @@ def manage_options():
 #
     parser.add_argument("-f","--formula",
                         default="isi",
-                        choices=["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","mp2"],
-                        help="Formula to be used. Options: isi, revisi, genisi, spl, lb, spl2, mpacf1, dpi, mp2",
+                        choices=["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","hfac24","mp2"],
+                        help="Formula to be used. Options: isi, revisi, genisi, spl, lb, spl2, mpacf1, dpi,hfac24, mp2",
                         metavar="<string>")
 #
     parser.add_argument("-w","-wfunc",
-                        default="hpc",
-                        choices=["pc","hpc","mpc"],
-                        help="W_inf functional. Options: pc, hpc, mpc",
+                        default=None,
+                        choices=["pc","hpc","mpc","hfpc"],
+                        help="W_inf functional. Options: pc, hpc, mpc,hfpc",
                         metavar="<string>")
 #
     parser.add_argument("-n","-nthreads",
@@ -119,7 +119,7 @@ i = 1
 for isimul in acmxc_simul:
     if (len(acmxc_simul)>1): print(f"==== System {i} ====")
     isimul.verbose = True
-    tools.print_options([isimul.program_name,isimul.tdir,isimul.baseinput,isimul.ncpu,isimul.acm_formula,isimul.wfunc,isimul.metal_mode])
+    tools.print_options([isimul.program_name,isimul.tdir,isimul.baseinput,isimul.ncpu,isimul.acm_formula,isimul.wfunc,isimul.metal_mode,isimul.w34])
     isimul.run_program()
     isimul.extract_results()
     isimul.compute_acm_xc_energy()

@@ -76,13 +76,27 @@ class crystal:
         if (os.path.isfile(self.scf_file_name) and self.check_scf_convergence()):
             print("already done")
         else:
-            subprocess.run([self.crystal_exec, str(self.ncpu), self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            shutil.move(self.baseinput + ".out", self.scf_file_name)
-            if(not self.check_scf_convergence()):
-                tools.error(f"The SCF calculation did not converge.\n Check the {self.scf_file_name} file")             
+#       SCF part
+            self.run_scf()
+#       W_inf part
+        self.run_winf()
+
+
+    def run_scf(self):
+        subprocess.run([self.crystal_exec, str(self.ncpu), self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        shutil.move(self.baseinput + ".out", self.scf_file_name)
+        if(not self.check_scf_convergence()):
+            tools.error(f"The SCF calculation did not converge.\n Check the {self.scf_file_name} file")
+
+
+    def run_winf(self):             
         subprocess.run([self.properties_exec, self.baseinput, self.baseinput], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         shutil.move(self.baseinput + ".outp", self.w_file_name)
+        
 
+    def run_w34(self):
+        tools.error("W_3/4 is not yet implemented for Crystal")
+        
 
     def run_mp2(self):
         if(os.path.isfile(self.mp2_file_name)):

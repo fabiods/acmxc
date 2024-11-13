@@ -1,10 +1,15 @@
 from numpy import sqrt
 from numpy import log
+from numpy import exp
+from scipy.special import erfc
 import numpy as np
 import tools
 from numpy import power as nppower
+from numpy import linspace as nplinspace
+from numpy import trapz as nptrapz
 
-def compute_acm(formula,xene,wene,w1ene,mp2ene):
+
+def compute_acm(formula,xene,wene,w1ene,w34ene,mp2ene):
     if (formula == "isi"):
         correne = compute_isi(xene,wene,w1ene,mp2ene)
     elif (formula == "revisi"):
@@ -19,6 +24,8 @@ def compute_acm(formula,xene,wene,w1ene,mp2ene):
         correne = compute_dpi(xene,wene,w1ene,mp2ene)
     elif (formula == "spl2"):
         correne = compute_spl2(xene,wene,mp2ene)
+    elif (formula == "hfac24"):
+        correne = compute_hfac24(xene,wene,w1ene,w34ene,mp2ene)
     elif (formula == "mp2"):
         correne = mp2ene
     elif (formula == "mpacf1"):
@@ -43,12 +50,38 @@ def print_refs(formula):
         refstri="Phys. Rev. B 81, 085123 (2010)"
     elif (formula == "spl2" or formula=="mpacf1"):
         refstri="J. Phys. Chem. Lett. 12, 4769 (2021)"
+    elif (formula == "hfac24"):
+        refstri="J. Phys. Chem. Lett xx, yyy, (2025)"
     elif (formula == "mp2"):
         refstri="Phys. Rev. 46,  618 (1934)"
     else:
         refstri=""
     print(f"  Ref: {refstri}")
-         
+
+
+def autoset_wfunc(formula):
+    if (formula == "isi"):
+        wfunc = "pc"
+    elif (formula == "revisi"):
+        wfunc = "pc"
+    elif (formula == "spl"):
+        wfunc = "pc"
+    elif (formula == "lb"):
+        wfunc = "pc"
+    elif (formula == "genisi"): 
+        wfunc = "hpc"
+    elif (formula == "dpi"):  
+        wfunc = "hpc"
+    elif (formula == "spl2" or formula=="mpacf1"):
+        wfunc = "pc"
+    elif (formula == "hfac24"):
+        wfunc = "hfpc"
+    elif (formula == "mp2"):
+        wfunc = "pc"
+    else:
+        tools.error(f"Formula {formula} not implemented!")
+    return wfunc
+    
 
 def compute_isi(xene,wene,w1ene,mp2ene):
     if (mp2ene == 0):
@@ -199,3 +232,40 @@ def compute_spl_lim(xene,wene):
 def compute_lb_lim(xene,wene):
      cene=wene-xene
      return cene
+
+
+def uegisi_wc(ll,hf_wc,w1ene,w34ene):
+    q = -hf_wc/w1ene
+    z = -w34ene/w1ene
+    d1 = 1457.2
+    d2 = 132.15
+    d3 = (2.*sqrt(2.*q*(1.+d1))+q*z)*(1.+d2)*z/(8.+8*d1-q*z*z)
+    c = (q*q*nppower(1.+d2+d3,4))/(4*(1+d1)**2.)
+    b = (-hf_wc*(1.+d2+d3)**2.)/(1+d1)
+    tmp1 = b*(2. + c*ll + 2.*d1*sqrt(c*ll+1.))
+    tmp2 = 2.*sqrt(c*ll+1)*(d2+d3*nppower(c*ll+1.,1./4.) + sqrt(c*ll+1.))**2.
+    uegisi_wc = hf_wc + tmp1/tmp2
+    return uegisi_wc
+ 
+
+def hfac24_wc(ll,xene,wene,w1ene,w34ene,mp2ene):
+    kappa = 0.3
+    hf_wc = wene + xene
+    xx = nplinspace(0.0,1.0,500)
+    tmp = uegisi_wc(xx,hf_wc,w1ene,w34ene)
+    uegisi_cene = nptrapz(tmp,xx)
+    tt = 2.*ll*mp2ene
+    hh = 1./(1.-tt*exp(100*( uegisi_wc(ll,hf_wc,w1ene,w34ene) - tt )))
+    gg = erfc(kappa*tt/(2.*uegisi_cene)) * hh
+    wc = tt*gg + uegisi_wc(ll,hf_wc,w1ene,w34ene)*(1.-gg)
+    return wc         
+
+
+def compute_hfac24(xene,wene,w1ene,w34ene,mp2ene):
+    if (mp2ene == 0.0):
+        return 0.0
+    else:
+        ll = nplinspace(0.0,1.0,500)
+        hfac24wc = hfac24_wc(ll,xene,wene,w1ene,w34ene,mp2ene)
+        cene = nptrapz(hfac24wc,ll)
+        return cene

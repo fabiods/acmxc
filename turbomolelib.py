@@ -2,7 +2,12 @@ import os
 import tools
 import subprocess
 import shutil
+from numpy import array as nparray
+from numpy import sum as npsum
+from numpy import power as nppower
+from numpy import zeros as npzeros
 
+import sys
 
 class turbomole:
 
@@ -88,25 +93,33 @@ class turbomole:
             subprocess.run([self.ridft_exec], stdout=f, stderr=subprocess.DEVNULL)
 
             
-    def run_scf_and_w(self):
+    def run_scf_and_w(self):      
 #       do nothing if the SCF calculation is already there
         if (os.path.isfile(self.scf_file_name) and self.check_scf_convergence()):  
             print("Already done")
         else:
 #       SCF part
-            with open(self.scf_file_name,"w") as f:
-                self.run_ridft(f,False)
+            self.run_scf()
+#       W_inf part
+        self.run_winf()
+
+        
+    def run_scf(self):
+        with open(self.scf_file_name,"w") as f:
+            self.run_ridft(f,False)
+            if (not self.check_scf_convergence()):
+                self.run_ridft(f,True,damp=3)
                 if (not self.check_scf_convergence()):
-                    self.run_ridft(f,True,damp=3)
+                    self.run_ridft(f,True,damp=16)
                     if (not self.check_scf_convergence()):
-                        self.run_ridft(f,True,damp=16)
+                        self.run_ridft(f,True,damp=12)
                         if (not self.check_scf_convergence()):
-                            self.run_ridft(f,True,damp=12)
-                            if (not self.check_scf_convergence()):
-                                tools.error(f"The SCF calculation did not converge.\n Check the {self.scf_file_name} file") 
-#       W calculation
-#        this is performed in the temporary directory TMP
-        if (os.path.isdir("TMP")): shutil.rmtree("TMP") #tools.remove_dir("TMP")
+                            tools.error(f"The SCF calculation did not converge.\n Check the {self.scf_file_name} file")
+
+                            
+    def run_winf(self):
+#       W calculation is performed in the temporary directory TMP
+        if (os.path.isdir("TMP")): shutil.rmtree("TMP") 
         os.mkdir("TMP")
         tools.cp_all_files(".","TMP")
         os.chdir("TMP")
@@ -123,6 +136,95 @@ class turbomole:
         shutil.rmtree("TMP")# tools.remove_dir("TMP")
 
 
+    def run_w34(self):
+#       W34 calculation is performed in the temporary directory TMP
+        if (os.path.isdir("TMP")): shutil.rmtree("TMP") 
+        os.mkdir("TMP")
+        tools.cp_all_files(".","TMP")
+        os.chdir("TMP")
+#       check if it is an UHF calculation
+        uhf = False
+        with open("control","r") as f:
+            control_content = f.readlines()
+            for line in control_content:
+                if ("$uhf" in line):
+                    uhf = True
+                    break        
+#       get the number of atoms from file control
+        with open("control","r") as f:
+            control_content = f.readlines()
+            for line in control_content:
+                if ("natoms=" in line):
+                    natoms = int(line.split("=")[1])
+                    break
+#       get atomic coordinates and nuclear charges from the scf_file
+        atomic_coords = []
+        nuclear_charges = []
+        with open(self.scf_file_name,"r") as f:
+            scf_content = f.readlines()
+            for i in range(len(scf_content)):
+                line = scf_content[i]
+                if ("atomic coordinates            atom    charge  isotop" in line):
+                    for j in range(1,natoms+1):
+                        linea = scf_content[i+j]
+                        xx = float(linea.split()[0])
+                        yy = float(linea.split()[1])
+                        zz = float(linea.split()[2])
+                        ch = float(linea.split()[4])
+                        atomic_coords.append((xx,yy,zz))
+                        nuclear_charges.append(ch)
+                    break
+#       compute densities at nuclear positions
+        stri = "$pointval dens geo=point\n "
+        for i in range(len(atomic_coords)):
+            xx = atomic_coords[i][0]
+            yy = atomic_coords[i][1]
+            zz = atomic_coords[i][2]
+            stri = f"{stri} {xx} {yy} {zz}\n "
+        stri = stri[:-2]
+        tools.adg(stri)
+        subprocess.run([self.ridft_exec,"-proper"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        shutil.copy("td.xyz","../densities.dat")
+        if (uhf):
+            shutil.copy("sd.xyz","../spindens.dat")
+#            
+        os.chdir("..")
+        shutil.rmtree("TMP")
+#       get densities from the file densities.dat
+        densities = []
+        with open("densities.dat","r") as f:
+            densities_content = f.readlines()
+            for i in range(len(densities_content)):
+                line = densities_content[i]
+                if ("cartesian coordinates x,y,z and f(x,y,z)" in line):
+                    for j in range(1,natoms+1):
+                        linea = densities_content[i+j]
+                        densities.append(float(linea.split()[3]))
+                    break
+#       get spin densities (if uhf)
+        if (uhf):
+            spindens = []
+            with open("spindens.dat","r") as f:
+                spindens_content = f.readlines()
+                for i in range(len(spindens_content)):
+                    line = spindens_content[i]
+                    if ("cartesian coordinates x,y,z and f(x,y,z)" in line):
+                        for j in range(1,natoms+1):
+                            linea = spindens_content[i+j]
+                            spindens.append(float(linea.split()[3]))
+#       compute W3/4
+        nuclear_charges = nparray(nuclear_charges)
+        densities = nparray(densities)
+        if (uhf):
+            spindens = nparray(spindens)
+        else:
+            spindens = npzeros(natoms,dtype=float)
+        zeta = spindens/densities
+        ss = 0.5*(1.+zeta*zeta)
+        e34 = -2.002 - 1.588*ss + 0.394*ss*ss
+        self.w34ene = 0.470698131888*npsum(e34*nuclear_charges*nppower(densities,(1./4.))) 
+        
+        
     def run_mp2(self):
 #       do nothing if the MP2 calculation is already there
         if (os.path.isfile(self.mp2_file_name)):

@@ -91,6 +91,7 @@ def print_options(options):
     formula = options[4]
     wfunc = options[5]
     metal_mode = f"{options[6]}"
+    w34 = f"{options[7]}"
     print("")
     print("Program: ",program)
     if (program == "crystal"):
@@ -101,6 +102,7 @@ def print_options(options):
     acmlib.print_refs(formula)
     print("W functional: ",wfunc)
     print_w_refs(wfunc)
+    print("W3/4 functional: ",w34)
     print("Metal mode: ",metal_mode)
     print("")
 
@@ -112,5 +114,9 @@ def print_w_refs(wfunc):
         refstri = "J. Chem. Theory Comput. 18, 5936 (2022)"
     elif (wfunc == "mpc"):
         refstri = "Phys. Rev. B 99, 085117 (2019)"
+    elif (wfunc == "hfpc"):
+        refstri = "J. Phys. Chem. Lett xx, yyy, (2025)"
+    else:
+        refstri = ""
     stri = "  Ref: " + refstri
     print(stri)

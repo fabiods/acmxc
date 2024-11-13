@@ -4,17 +4,17 @@ import turbomolelib
 import crystallib
 import acmlib
 
-
+import sys
 
 class acmxc:
 
     allowed_programs_list = ["turbomole","crystal"]
-    allowed_acm_formulas = ["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","mp2"]
-    allowed_wfunc = ["pc","hpc","mpc"]
+    allowed_acm_formulas = ["isi","revisi","spl","lb","spl2","mpacf1","genisi","dpi","hfac24","mp2"]
+    allowed_wfunc = ["pc","hpc","mpc","hfpc"]
 
     
 
-    def __init__(self, program="turbomole", tdir=None, path=".", prog_input="input", ncpu=1, formula="isi", wfunc="hpc", metal_mode=False, verbose=True):
+    def __init__(self, program="turbomole", tdir=None, path=".", prog_input="input", ncpu=1, formula="isi", wfunc=None, metal_mode=False, verbose=True):
         self.verbose = verbose
         if (self.verbose): tools.print_header()
         self.set_tdir(tdir)
@@ -22,10 +22,11 @@ class acmxc:
         self.set_prog_input(prog_input)
         self.set_ncpu(ncpu)
         self.set_formula(formula)
-        self.set_wfunc(wfunc)
+        self.set_wfunc(wfunc,formula)
+        self.set_w34(formula)
         self.set_metal_mode(metal_mode)
         self.set_program(program)
-        if (self.verbose): tools.print_options([self.program_name,self.tdir,self.baseinput,self.ncpu,self.acm_formula,self.wfunc,self.metal_mode])
+        if (self.verbose): tools.print_options([self.program_name,self.tdir,self.baseinput,self.ncpu,self.acm_formula,self.wfunc,self.metal_mode,self.w34])
         
 
     def set_tdir(self,tdir):    
@@ -66,12 +67,22 @@ class acmxc:
             tools.error(f"{formula} is not a valid input for <formula>")
 
                 
-    def set_wfunc(self,wfunc):
-        if (wfunc in self.allowed_wfunc):
-            self.wfunc = wfunc
+    def set_wfunc(self,wfunc,formula):
+        if (wfunc == None):
+            self.wfunc = acmlib.autoset_wfunc(formula)
         else:
-            tools.error(f"{wfunc} is not a valid input for <wfunc>")
-                
+            if (wfunc in self.allowed_wfunc):
+                self.wfunc = wfunc
+            else:
+                tools.error(f"{wfunc} is not a valid input for <wfunc>")
+
+
+    def set_w34(self,formula):
+        if (formula == "hfac24"):
+            self.w34 = True
+        else:
+            self.w34 = False
+            
 
     def set_metal_mode(self,mode):
         if isinstance(mode, bool):
@@ -95,8 +106,15 @@ class acmxc:
     def run_program(self):
         here = os.getcwd()
         os.chdir(self.path)
+#       SCF and W_inf part
         print("Running SCF calculation...")
         self.program.run_scf_and_w()
+#       W_3/4 part
+        self.program.w34ene = 0.0
+        if (self.w34):
+            print("Running W_3/4 calculation...")
+            self.program.run_w34()
+#       MP2 part
         if (not self.metal_mode):
             print("Running MP2 calculation...")
             self.program.run_mp2()
@@ -113,19 +131,27 @@ class acmxc:
         self.xene = self.program.xene
         self.wene = self.program.wene
         self.w1ene = self.program.w1ene
+        self.w34ene = self.program.w34ene
         self.mp2ene = self.program.mp2ene
         os.chdir(here)
         if (self.verbose):
             print()
             print(" %-20s %16.10f" %("SCF energy:",self.scfene))
             print(" %-20s %16.10f" %("HF-exchange energy:",self.xene))
-            print(" %-20s %16.10f" %("W_inf energy:",self.wene))
-            print(" %-20s %16.10f" %("W1_inf energy:",self.w1ene))
+            if (self.acm_formula == "hfac24"):
+                print(" %-20s %16.10f" %("E_el energy:",self.wene))
+                print(" %-20s %16.10f" %("W_1/2 energy:",self.w1ene))
+                print(" %-20s %16.10f" %("W_{c,inf}^HF energy:",self.wene+self.xene))
+            else:
+                print(" %-20s %16.10f" %("W_inf energy:",self.wene))
+                print(" %-20s %16.10f" %("W1_inf energy:",self.w1ene))
+            if (self.w34):
+                print( " %-20s %16.10f" %("W_3/4 energy:",self.w34ene))
             print(" %-20s %16.10f" %("MP2 corr. energy:",self.mp2ene))
 
 
     def compute_acm_xc_energy(self):
-        self.correne = acmlib.compute_acm(self.acm_formula,self.xene,self.wene,self.w1ene,self.mp2ene)
+        self.correne = acmlib.compute_acm(self.acm_formula,self.xene,self.wene,self.w1ene,self.w34ene,self.mp2ene)
         self.xcene = self.xene + self.correne
         self.totene = self.scfene + self.correne
 
