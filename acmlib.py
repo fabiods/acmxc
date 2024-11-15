@@ -266,6 +266,9 @@ def compute_hfac24(xene,wene,w1ene,w34ene,mp2ene):
         return 0.0
     else:
         ll = nplinspace(0.0,1.0,500)
-        hfac24wc = hfac24_wc(ll,xene,wene,w1ene,w34ene,mp2ene)
+        if (mp2ene == -np.inf):
+            hfac24wc = uegisi_wc(ll,wene + xene,w1ene,w34ene)
+        else:
+            hfac24wc = hfac24_wc(ll,xene,wene,w1ene,w34ene,mp2ene)
         cene = nptrapz(hfac24wc,ll)
         return cene
